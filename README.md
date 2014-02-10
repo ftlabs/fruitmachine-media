@@ -5,7 +5,7 @@ FruitMachine helper that allows different setup and teardown callbacks to be cal
 ## Example usage
 
 ```js
-var fm = require('fm');
+var fm = require('fruitmachine');
 
 fm.define({
   name: 'passionfruit',
