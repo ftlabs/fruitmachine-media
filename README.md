@@ -2,15 +2,18 @@
 
 FruitMachine helper that allows different setup and teardown callbacks to be called based on media queries.
 
-## Example
+## Example usage
 
 ```js
 var fm = require('fm');
 
-module.exports = fm.define({
-  template: function() {
+fm.define({
+  name: 'passionfruit',
 
+  template: function() {
+    // Normal fruitmachine template method
   },
+
   helpers: [
     require('fruitmachine-media')
   ],
