@@ -1,6 +1,6 @@
 {
   "name": "fruitmachine-media",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "FruitMachine helper that allows different setup and teardown callbacks to be called based on media queries",
   "main": "media.js",
   "scripts": {
