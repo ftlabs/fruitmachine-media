@@ -68,7 +68,7 @@ module.exports = function(module) {
 				state = this._media[name];
 				matcher = state.matcher;
 				matcher.removeListener(state.cb);
-				if (matcher.matches) teardown(name);
+				if (matcher.matches) teardown(name, { fromDOM: false });
 			}
 		}
 	});
@@ -127,13 +127,16 @@ module.exports = function(module) {
 		run('setup', { on: name });
 	}
 
-	function teardown(name) {
-		module.el.classList.remove(name);
-		run('teardown', { on: name });
+	function teardown(name, options) {
+		var fromDOM = (!options || options.fromDOM !== false);
+		if (fromDOM) {
+			module.el.classList.remove(name);
+		}
+		run('teardown', { on: name, fromDOM: fromDOM });
 	}
 
 	function run(method, options) {
 		var fn = module._media[options.on][method];
-		if (fn) fn.call(module);
+		if (fn) fn.call(module, options);
 	}
 };
