@@ -115,7 +115,7 @@ module.exports = function(module) {
 
 			// Fire an event to allow third
 			// parties to hook into this change.
-			module.fire('statechange');
+			module.fireStatic('statechange');
 
 			// Update the matches state
 			state.matches = data.matches;
