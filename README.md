@@ -53,4 +53,4 @@ Licensed under the MIT license.
 - **Wilson Page** - [@wilsonpage](http://github.com/wilsonpage)
 - **Matt Andrews** - [@matthew-andrews](http://github.com/matthew-andrews)
 
-All open source code released by FT Labs is licenced under the MIT licence. We welcome comments, feedback and suggestions. Please feel free to raise an issue or pull request. Enjoy...
+All open source code released by FT Labs is licenced under the MIT licence. We welcome comments, feedback and suggestions. Please feel free to raise an issue or pull request.
