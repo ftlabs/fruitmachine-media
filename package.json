@@ -10,6 +10,13 @@
     "type": "git",
     "url": "git@git.ak.ft.com:ftlabs/fruitmachine-media.git"
   },
-  "author": "Wilson Page <wilsonpage@me.com>",
-  "license": "MIT"
+  "author": {
+    "name": "Wilson Page",
+    "email": "wilsonpage@me.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "async": "^0.8.0",
+    "set-immediate": "^0.1.1"
+  }
 }
