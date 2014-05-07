@@ -149,7 +149,7 @@ module.exports = function(module) {
 
 	function run(method, options) {
 		var fn = module._media[options.on][method];
-		if (fn) return fn.call(module, options, function () { debugger; });
+		if (fn) return fn.call(module, options);
 	}
 };
 
