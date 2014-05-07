@@ -16,7 +16,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "async": "^0.8.0",
+    "es6-promise": "^1.0.0",
     "set-immediate": "^0.1.1"
   }
 }

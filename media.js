@@ -14,7 +14,7 @@
  */
 
 var mm = window.matchMedia;
-var async = require('async');
+var Promise = require('es6-promise').Promise;
 
 /**
  * Exports
@@ -57,7 +57,7 @@ module.exports = function(module) {
 				matcher.addListener(state.cb = callback(name));
 
 				// Call setup on the current media state.
-				if (matcher.matches) setup(name, function () {});
+				if (matcher.matches) setup(name);
 			}
 		}
 	});
@@ -71,7 +71,7 @@ module.exports = function(module) {
 				state = this._media[name];
 				matcher = state.matcher;
 				matcher.removeListener(state.cb);
-				if (matcher.matches) teardown(name, { fromDOM: false }, function () {});
+				if (matcher.matches) teardown(name, { fromDOM: false });
 			}
 		}
 	});
@@ -102,17 +102,24 @@ module.exports = function(module) {
 				setImmediateId = setImmediate(function() {
 					setImmediateId = 0;
 
-					// Run teardown callbacks (if any)
-					async.each(teardownCallbacks, teardown, function (err, results) {
+					Promise.all(teardownCallbacks.map(function (currentItem) {
+						teardown (currentItem);
+					})).then(function () {
 
 						// Fire an event to allow third
 						// parties to hook into this change.
 						module.fireStatic('statechange');
 
 						// Run Setup callbacks if any.
-						async.each(setupCallbacks, setup, function (err, results) {
+						Promise.all(setupCallbacks.map(function (currentItem) {
+							setup (currentItem);
+						})).then(function () {
 							module.fireStatic('statechangecomplete');
+						}).catch(function (e) {
+							console.error("Error in module setup", e);
 						});
+					}).catch(function (e) {
+						console.error("Error in module teardown", e);
 					});
 				});
 			}
@@ -124,26 +131,25 @@ module.exports = function(module) {
 
 
 
-	function setup(name, callback) {
+	function setup(name) {
 		setupCallbacks.splice(setupCallbacks.indexOf(name), 1);
 		module.el.classList.add(name);
-		run('setup', { on: name }, callback);
+		return run('setup', { on: name }, callback);
 	}
 
-	function teardown(name, options, callback) {
+	function teardown(name, options) {
 		teardownCallbacks.splice(teardownCallbacks.indexOf(name), 1);
 		var fromDOM = (!options || options.fromDOM !== false);
 		if (fromDOM) {
 			module.el.classList.remove(name);
 		}
 		if (typeof options === "function") callback = options;
-		run('teardown', { on: name, fromDOM: fromDOM }, callback);
+		return run('teardown', { on: name, fromDOM: fromDOM });
 	}
 
-	function run(method, options, callback) {
+	function run(method, options) {
 		var fn = module._media[options.on][method];
-		if (fn) fn.call(module, options, callback);
-		else callback();
+		if (fn) return fn.call(module, options, function () { debugger; });
 	}
 };
 
