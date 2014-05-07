@@ -25,19 +25,23 @@ fm.define({
 
   states: {
     small: {
-      setup: function() {
+      setup: function(options, callback) {
         // Run small setup logic
+        callback(error);
       },
-      teardown: function() {
+      teardown: function(options, callback) {
         // Run small teardown logic
+        callback(error);
       }
     },
     large: {
-      setup: function() {
+      setup: function(options, callback) {
         // Run large setup logic
+        callback(error);
       },
-      teardown: function() {
+      teardown: function(options, callback) {
         // Run large teardown logic
+        callback(error);
       }
     }
   }
@@ -52,5 +56,6 @@ Licensed under the MIT license.
 
 - **Wilson Page** - [@wilsonpage](http://github.com/wilsonpage)
 - **Matt Andrews** - [@matthew-andrews](http://github.com/matthew-andrews)
+- **Ada Rose Edwards** - [@adaroseedwards](http://github.com/adaroseedwards)
 
 All open source code released by FT Labs is licenced under the MIT licence. We welcome comments, feedback and suggestions. Please feel free to raise an issue or pull request.
