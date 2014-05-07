@@ -1,4 +1,4 @@
-# fruitmachine-media
+# fruitmachine-media [![Build Status](https://travis-ci.org/ftlabs/fruitmachine-media.svg?branch=master)](https://travis-ci.org/ftlabs/fruitmachine-media)
 
 FruitMachine helper that allows different setup and teardown callbacks to be called based on media queries.
 
