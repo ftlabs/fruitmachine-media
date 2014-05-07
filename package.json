@@ -4,7 +4,8 @@
   "description": "FruitMachine helper that allows different setup and teardown callbacks to be called based on media queries",
   "main": "media.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run jshint",
+    "jshint": "find . -path ./node_modules -prune -o -iname '*.js' -print -o -iname '*.json' -print | xargs ./node_modules/.bin/jshint"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,8 @@
   "dependencies": {
     "es6-promise": "^1.0.0",
     "set-immediate": "^0.1.1"
+  },
+  "devDependencies": {
+    "jshint": "^2.5.0"
   }
 }
