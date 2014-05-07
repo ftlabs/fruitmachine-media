@@ -1,15 +1,7 @@
 /* jshint node: true, browser: true */
 
 /**
- * Media Helper rewrite.
- *
- * This is a rewrite of media helper to enforce propogation of events from parent to children.
- * Ensure that teardown of one state is fired before setup of another.
- *
- * Usage: Register what events you would like to subscribe to.
- * These events will also get fired on all the children so if you
- * reregister on a perchild basis they will get fired twice on the
- * item and all of it's children.
+ * Media Helper.
  *
  * @codingstandard ftlabs-jsv2
  * @copyright The Financial Times Limited [All rights reserved]
