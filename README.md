@@ -1,6 +1,6 @@
 # fruitmachine-media [![Build Status](https://travis-ci.org/ftlabs/fruitmachine-media.svg?branch=master)](https://travis-ci.org/ftlabs/fruitmachine-media)
 
-FruitMachine helper that allows different setup and teardown callbacks to be called based on media queries.
+FruitMachine helper that allows different setup and teardown callbacks to be called based on media queries.  If asychronous logic is needed to be run within a `teardown` or `setup` callback, return a promise.
 
 ## Example usage
 
@@ -25,23 +25,27 @@ fm.define({
 
   states: {
     small: {
-      setup: function(options, callback) {
+      setup: function(options) {
         // Run small setup logic
-        callback(error);
       },
-      teardown: function(options, callback) {
+      teardown: function(options) {
         // Run small teardown logic
-        callback(error);
       }
     },
     large: {
-      setup: function(options, callback) {
+      setup: function(options) {
         // Run large setup logic
-        callback(error);
+
+        // If asychronous logic needs to be run:-
+        //
+        // var promise = new Promise();
+        // doAsyncStuff(function() {
+        //   promise.resolve();
+        // });
+        // return promise;
       },
-      teardown: function(options, callback) {
+      teardown: function(options) {
         // Run large teardown logic
-        callback(error);
       }
     }
   }
