@@ -89,6 +89,16 @@ module.exports = function(module) {
 
 			var state = module._media[name];
 
+			// NOTE:WP:Don't do anything if the
+			// matches state has not changed.
+			// This is to work around a strange bug,
+			// whereby sometimes the callback fires
+			// twice.
+			//
+			// I'm not sure if this a browser
+			// bug, or a bug we have caused.
+			if (state.matches === data.matches) return;
+
 			// Either setup or teardown
 			if (data.matches) {
 				setupCallbacks.push(name);
@@ -101,18 +111,14 @@ module.exports = function(module) {
 					setImmediateId = 0;
 
 					// Run teardown callbacks (if any)
-					var tearDownCallbacksLength = teardownCallbacks.length;
-					async.map(teardownCallbacks, teardown, function (err, results) {
-						teardownCallbacks.slice(tearDownCallbacksLength);
+					async.each(teardownCallbacks, teardown, function (err, results) {
 
 						// Fire an event to allow third
 						// parties to hook into this change.
 						module.fireStatic('statechange');
 
 						// Run Setup callbacks if any.
-						var setupCallbacksLength = setupCallbacks.length;
-						async.map(setupCallbacks, setup, function (err, results) {
-							setupCallbacks.slice(setupCallbacksLength);
+						async.each(setupCallbacks, setup, function (err, results) {
 							module.fireStatic('statechangecomplete');
 						});
 					});
@@ -127,11 +133,13 @@ module.exports = function(module) {
 
 
 	function setup(name, callback) {
+		setupCallbacks.splice(setupCallbacks.indexOf(name), 1);
 		module.el.classList.add(name);
 		run('setup', { on: name }, callback);
 	}
 
 	function teardown(name, options, callback) {
+		teardownCallbacks.splice(teardownCallbacks.indexOf(name), 1);
 		var fromDOM = (!options || options.fromDOM !== false);
 		if (fromDOM) {
 			module.el.classList.remove(name);
