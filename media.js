@@ -153,7 +153,7 @@ module.exports = function(module) {
 
 	function run(method, options) {
 		var fn = module._media[options.on][method];
-		var result = fn ? fn.call(module, options) : undefined;
+		var result = fn && fn.call(module, options);
 
 		// Filter out any non promise results.
 		return result === undefined || !!result.then ? result : undefined;
