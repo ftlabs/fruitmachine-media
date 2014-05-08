@@ -102,18 +102,25 @@ module.exports = function(module) {
 				setImmediateId = setImmediate(function() {
 					setImmediateId = 0;
 
-					Promise.all(teardownCallbacks.map(function (currentItem) {
+					Promise.all(teardownCallbacks = teardownCallbacks.map(function (currentItem) {
 						teardown (currentItem);
 					})).then(function () {
+
+						// Remove all processed items from the teardown callbacks
+						teardownCallbacks = teardownCallbacks.filter(function (a) {return a!==undefined;});
 
 						// Fire an event to allow third
 						// parties to hook into this change.
 						module.fireStatic('statechange');
 
 						// Run Setup callbacks if any.
-						Promise.all(setupCallbacks.map(function (currentItem) {
+						Promise.all(setupCallbacks = setupCallbacks.map(function (currentItem) {
 							setup (currentItem);
 						})).then(function () {
+
+							// Remove all processed items from the setup callbacks
+							setupCallbacks = setupCallbacks.filter(function (a) {return a!==undefined;});
+
 							module.fireStatic('statechangecomplete');
 						}).catch(function (e) {
 							console.error("Error in module setup", e);
@@ -132,24 +139,24 @@ module.exports = function(module) {
 
 
 	function setup(name) {
-		setupCallbacks.splice(setupCallbacks.indexOf(name), 1);
 		module.el.classList.add(name);
-		return run('setup', { on: name }, callback);
+		return run('setup', { on: name });
 	}
 
 	function teardown(name, options) {
-		teardownCallbacks.splice(teardownCallbacks.indexOf(name), 1);
 		var fromDOM = (!options || options.fromDOM !== false);
 		if (fromDOM) {
 			module.el.classList.remove(name);
 		}
-		if (typeof options === "function") callback = options;
 		return run('teardown', { on: name, fromDOM: fromDOM });
 	}
 
 	function run(method, options) {
 		var fn = module._media[options.on][method];
-		if (fn) return fn.call(module, options);
+		var result = fn ? fn.call(module, options) : undefined;
+
+		// Filter out any non promise results.
+		return result === undefined || !!result.then ? result : undefined;
 	}
 };
 
