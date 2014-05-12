@@ -102,9 +102,11 @@ module.exports = function(module) {
 				setImmediateId = setImmediate(function() {
 					setImmediateId = 0;
 
-					Promise.all(teardownCallbacks = teardownCallbacks.map(function (currentItem) {
-						teardown (currentItem);
-					})).then(function () {
+					teardownCallbacks = teardownCallbacks.map(function (currentItem) {
+						return teardown(currentItem);
+					});
+
+					Promise.all(teardownCallbacks).then(function () {
 
 						// Remove all processed items from the teardown callbacks
 						teardownCallbacks = teardownCallbacks.filter(function (a) {return a!==undefined;});
@@ -114,9 +116,10 @@ module.exports = function(module) {
 						module.fireStatic('statechange');
 
 						// Run Setup callbacks if any.
-						Promise.all(setupCallbacks = setupCallbacks.map(function (currentItem) {
-							setup (currentItem);
-						})).then(function () {
+						setupCallbacks = setupCallbacks.map(function (currentItem) {
+							return setup(currentItem);
+						});
+						Promise.all(setupCallbacks).then(function () {
 
 							// Remove all processed items from the setup callbacks
 							setupCallbacks = setupCallbacks.filter(function (a) {return a!==undefined;});
@@ -139,11 +142,13 @@ module.exports = function(module) {
 
 
 	function setup(name) {
+		if (typeof name !== "string") return;
 		module.el.classList.add(name);
 		return run('setup', { on: name });
 	}
 
 	function teardown(name, options) {
+		if (typeof name !== "string") return;
 		var fromDOM = (!options || options.fromDOM !== false);
 		if (fromDOM) {
 			module.el.classList.remove(name);
