@@ -14,6 +14,7 @@
  */
 
 var mm = window.matchMedia;
+require('set-immediate');
 var Promise = require('es6-promise').Promise;
 
 /**
