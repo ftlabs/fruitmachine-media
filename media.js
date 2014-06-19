@@ -176,7 +176,8 @@ module.exports = function(module) {
 		var result = fn && fn.call(module, options);
 
 		// Filter out any non promise results.
-		return result === undefined || !!result.then ? result : undefined;
+		if (result.then) return result;
+		return;
 	}
 };
 
