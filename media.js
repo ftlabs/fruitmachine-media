@@ -109,16 +109,16 @@ module.exports = function(module) {
 			if (data.matches) {
 
 				// Add teardowns to the beginning
-				callbacks.unshift({
+				callbacks.push({
 					name: name,
-					action: teardown
+					action: setup
 				});
 			} else {
 
 				// Add setups to the end
-				callbacks.push({
+				callbacks.unshift({
 					name: name,
-					action: setup
+					action: teardown
 				});
 			}
 
