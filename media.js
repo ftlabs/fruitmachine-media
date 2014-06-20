@@ -107,11 +107,15 @@ module.exports = function(module) {
 
 			// Either setup or teardown
 			if (data.matches) {
-				callbacks.push({
+
+				// Add teardowns to the beginning
+				callbacks.unshift({
 					name: name,
 					action: teardown
 				});
 			} else {
+
+				// Add setups to the end
 				callbacks.push({
 					name: name,
 					action: setup
