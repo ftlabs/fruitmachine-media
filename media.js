@@ -23,8 +23,7 @@ var Promise = require('es6-promise').Promise;
 
 module.exports = function(module) {
 	var setImmediateId = 0;
-	var setupCallbacks = [];
-	var teardownCallbacks = [];
+	var callbacks = [];
 
 	module.on('initialize', function(options) {
 		this._media = {};
@@ -77,46 +76,18 @@ module.exports = function(module) {
 		}
 	});
 
-	function processStateChanges(fn) {
+	function processStateChanges(callback) {
+		if(callbacks.length) {
 
-		teardownCallbacks = teardownCallbacks.map(function (currentItem) {
-			return teardown(currentItem);
-		});
-
-		Promise.all(teardownCallbacks).then(function () {
-
-			// Remove all processed items from the teardown callbacks
-			teardownCallbacks = teardownCallbacks.filter(function (a) {return a!==undefined;});
-
-			// Fire an event to allow third
-			// parties to hook into this change.
-			module.fireStatic('statechange');
-
-			// Run Setup callbacks if any.
-			setupCallbacks = setupCallbacks.map(function (currentItem) {
-				return setup(currentItem);
+			// Pull oldest state change
+			var item = callbacks.shift();
+			Promise.all([item.action(item.name)]).then(function () {
+				module.fireStatic('statechange');
+				processStateChanges(callback);
 			});
-			Promise.all(setupCallbacks).then(function () {
-
-				// Remove all processed items from the setup callbacks
-				setupCallbacks = setupCallbacks.filter(function (a) {return a!==undefined;});
-
-				// If there are now items newly added since teardown was run process them.
-				if (teardownCallbacks.length) {
-					processStateChanges (fn);
-				} else {
-
-					// If there is nothing left to do fire the callback.
-					if (fn) fn();
-				}
-
-				module.fireStatic('statechangecomplete');
-			}).catch(function (e) {
-				console.error("Error in module setup", e);
-			});
-		}).catch(function (e) {
-			console.error("Error in module teardown", e);
-		});
+		} else {
+			callback();
+		}
 	}
 
 	function callback(name) {
@@ -136,15 +107,23 @@ module.exports = function(module) {
 
 			// Either setup or teardown
 			if (data.matches) {
-				setupCallbacks.push(name);
+				callbacks.push({
+					name: name,
+					action: teardown
+				});
 			} else {
-				teardownCallbacks.push(name);
+				callbacks.push({
+					name: name,
+					action: setup
+				});
 			}
 
 			if (!setImmediateId) {
+
+				// Allow for all state changes to be registered.
 				setImmediateId = setImmediate(function() {
 					processStateChanges(function () {
-						setImmediateId =  0;
+						setImmediateId = 0;
 					});
 				});
 			}
@@ -176,8 +155,7 @@ module.exports = function(module) {
 		var result = fn && fn.call(module, options);
 
 		// Filter out any non promise results.
-		if (result.then) return result;
-		return;
+		return result === undefined || !!result.then ? result : undefined;
 	}
 };
 
