@@ -90,7 +90,7 @@ module.exports = function(module) {
 			});
 		} else {
 			processing = false;
-			callback();
+			if (callback) callback();
 		}
 	}
 
