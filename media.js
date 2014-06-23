@@ -24,6 +24,8 @@ var Promise = require('es6-promise').Promise;
 module.exports = function(module) {
 	var setImmediateId = 0;
 	var callbacks = [];
+	var callbackProcessList = [];
+	var processing = 0;
 
 	module.on('initialize', function(options) {
 		this._media = {};
@@ -77,15 +79,17 @@ module.exports = function(module) {
 	});
 
 	function processStateChanges(callback) {
-		if(callbacks.length) {
+		processing = true;
+		if(callbackProcessList.length) {
 
 			// Pull oldest state change
-			var item = callbacks.shift();
+			var item = callbackProcessList.shift();
 			Promise.all([item.action(item.name)]).then(function () {
 				module.fireStatic('statechange');
 				processStateChanges(callback);
 			});
 		} else {
+			processing = false;
 			callback();
 		}
 	}
@@ -108,14 +112,14 @@ module.exports = function(module) {
 			// Either setup or teardown
 			if (data.matches) {
 
-				// Add teardowns to the beginning
+				// Add setups to the beginning
 				callbacks.push({
 					name: name,
 					action: setup
 				});
 			} else {
 
-				// Add setups to the end
+				// Add teardowns to the end
 				callbacks.unshift({
 					name: name,
 					action: teardown
@@ -124,11 +128,15 @@ module.exports = function(module) {
 
 			if (!setImmediateId) {
 
-				// Allow for all state changes to be registered.
+				// Allow for all state changes to be registered. (In order of teardown -> setup)
+				// Concatenate this to the list of pending state changes.
+				// Trigger processStateChanges if it is not already running.
 				setImmediateId = setImmediate(function() {
-					processStateChanges(function () {
-						setImmediateId = 0;
-					});
+
+					setImmediateId = 0;
+					callbackProcessList = callbackProcessList.concat(callbacks);
+					callbacks = [];
+					if (!processing) processStateChanges();
 				});
 			}
 
