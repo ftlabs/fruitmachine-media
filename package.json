@@ -18,7 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "es6-promise": "^1.0.0",
-    "set-immediate": "^0.1.1"
+    "setimmediate": "~1.0.2"
   },
   "devDependencies": {
     "jshint": "^2.5.0"
