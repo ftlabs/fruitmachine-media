@@ -21,6 +21,12 @@
     "setimmediate": "~1.0.2"
   },
   "devDependencies": {
+    "buster": "~0.6.6",
+    "buster-istanbul": "^0.1.10",
+    "fruitmachine": "^0.8.2",
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.8",
+    "hogan.js": "^3.0.2",
     "jshint": "^2.5.0"
   }
 }
