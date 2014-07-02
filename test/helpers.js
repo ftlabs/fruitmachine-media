@@ -1,5 +1,6 @@
 window.helpers = {};
 
+window.matchMedia = require('./match-media-helper');
 /**
  * Templates
  */
@@ -32,7 +33,7 @@ window.Apple = helpers.Views.Apple = fruitmachine.define({
 	name: 'apple',
 	template: templates.apple,
 	helpers: [
-		require('../coverage/media.js')
+		require('../coverage/media')
 	],
 
 	initialize: function() {},
