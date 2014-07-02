@@ -21,8 +21,7 @@ module.exports = function(grunt) {
 		instrument: {
 			files: ['media.js'],
 			options: {
-				basePath: 'coverage/',
-				lazy: true
+				basePath: 'coverage/'
 			}
 		},
 
