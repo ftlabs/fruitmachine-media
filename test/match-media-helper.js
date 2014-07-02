@@ -1,7 +1,7 @@
 'use strict';
 
 var currentSize = null;
-var globalStateLibrary = [];
+var globalStateLibrary = {};
 
 function PseudoMediaQueryList (mediaQuery) {
 	var callbacks = [];
@@ -25,7 +25,7 @@ function PseudoMediaQueryList (mediaQuery) {
 
 	this._runCallbacks = function () {
 		callbacks.forEach(function (item) {
-			item();
+			item(this);
 		});
 	};
 }
@@ -51,9 +51,20 @@ module.exports.controller = {
 	},
 
 	setState: function (state) {
-		globalStateLibrary.forEach(function (item) {
-			item.matches = (item.media === state);
-			item._runCallbacks();
-		});
+
+		console.log('Resizing the window to match', state, 'the old state was', currentSize);
+
+		for (var i in globalStateLibrary) {
+			if (globalStateLibrary.hasOwnProperty(i)) {
+				var item = globalStateLibrary[i];
+				var oldMatchesValue = item.matches;
+				item.matches = (item.media === state);
+
+				// Run callback only if the state changes.
+				if (item.matches !== oldMatchesValue) {
+					item._runCallbacks();
+				}
+			}
+		}
 	}
 };

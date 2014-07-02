@@ -40,7 +40,7 @@ buster.testCase('View#destroy()', {
 
 		buster.log(window.matchMedia.controller.listStates());
 
-		window.matchMedia.controller.setState(window.matchMedia.controller.listStates()[0]);
+		window.matchMedia.controller.setState(window.matchMedia.controller.listStates()[1]);
 	},
 
 	tearDown: function() {
