@@ -1,11 +1,16 @@
+/*global Hogan, fruitmachine, sandbox*/
+
+'use strict';
+
 window.helpers = {};
 
 window.matchMedia = require('./match-media-helper');
+
+
 /**
  * Templates
  */
-
-window.templates = helpers.templates = {
+window.templates = window.helpers.templates = {
 	'apple': Hogan.compile('{{{1}}}'),
 	'layout': Hogan.compile('{{{1}}}{{{2}}}{{{3}}}'),
 	'list': Hogan.compile('{{#children}}{{{child}}}{{/children}}'),
@@ -14,14 +19,30 @@ window.templates = helpers.templates = {
 };
 
 /**
+ * Fake Breakpoints
+ */
+var boundaryWidth = 720;
+var boundaryHeight = 620;
+var breakpoints = {
+   'query-small': '(max-width:' + (boundaryWidth-1) + 'px), (max-height:' + (boundaryHeight-1) + 'px)',
+   'query-large': '(min-width:' + boundaryWidth + 'px) and (min-height:' + boundaryHeight + 'px)',
+   'query-large-portrait': '(min-width:' + boundaryWidth + 'px) and (min-height:' + boundaryHeight + 'px) and (orientation:portrait)',
+   'query-large-landscape': '(min-width:' + boundaryWidth + 'px) and (min-height:' + boundaryHeight + 'px) and (orientation:landscape)'
+};
+
+var media = {};
+media[breakpoints.get('query-small')] = 'small';
+media[breakpoints.get('query-large')] = 'large';
+
+/**
  * Module Definitions
  */
 
-helpers.Views = {};
+window.helpers.Views = {};
 
-window.Layout = helpers.Views.Layout = fruitmachine.define({
+window.Layout = window.helpers.Views.Layout = fruitmachine.define({
 	name: 'layout',
-	template: templates.layout,
+	template: window.templates.layout,
 
 	initialize: function() {},
 	setup: function() {},
@@ -29,22 +50,34 @@ window.Layout = helpers.Views.Layout = fruitmachine.define({
 	destroy: function() {}
 });
 
-window.Apple = helpers.Views.Apple = fruitmachine.define({
+window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	name: 'apple',
-	template: templates.apple,
+	template: window.templates.apple,
 	helpers: [
 		require('../coverage/media')
 	],
-
+    media: media,
 	initialize: function() {},
 	setup: function() {},
+
+    states: {
+        small: {
+            setup: function () {
+                console.log('State Small Setup');
+            },
+
+            teardown: function (options) {
+                console.log('State Small Teardown');
+            }
+        }
+    },
 	teardown: function() {},
 	destroy: function() {}
 });
 
-window.List = helpers.Views.List = fruitmachine.define({
+window.List = window.helpers.Views.List = fruitmachine.define({
 	name: 'list',
-	template: templates.list,
+	template: window.templates.list,
 
 	initialize: function() {},
 	setup: function() {},
@@ -52,9 +85,9 @@ window.List = helpers.Views.List = fruitmachine.define({
 	destroy: function() {}
 });
 
-window.Orange = helpers.Views.Orange = fruitmachine.define({
+window.Orange = window.helpers.Views.Orange = fruitmachine.define({
 	name: 'orange',
-	template: templates.orange,
+	template: window.templates.orange,
 
 	initialize: function() {},
 	setup: function() {},
@@ -62,9 +95,9 @@ window.Orange = helpers.Views.Orange = fruitmachine.define({
 	destroy: function() {}
 });
 
-window.Pear = helpers.Views.Pear = fruitmachine.define({
+window.Pear = window.helpers.Views.Pear = fruitmachine.define({
 	name: 'pear',
-	template: templates.pear,
+	template: window.templates.pear,
 
 	initialize: function() {},
 	setup: function() {},
@@ -77,17 +110,17 @@ window.Pear = helpers.Views.Pear = fruitmachine.define({
  */
 
 window.helpers.createView = function() {
-	var layout = new Layout();
-	var apple = new Apple({ slot: 1 });
-	var orange = new Orange({ slot: 2 });
-	var pear = new Pear({ slot: 3 });
+	var layout = new window.Layout();
+	var apple = new window.Apple({ slot: 1 });
+	var orange = new window.Orange({ slot: 2 });
+	var pear = new window.Pear({ slot: 3 });
 
 	layout
 		.add(apple)
 		.add(orange)
 		.add(pear);
 
-	return this.view = layout;
+	return (this.view = layout);
 };
 
 /**
@@ -112,4 +145,4 @@ window.helpers.emptySandbox = function() {
 	sandbox.innerHTML = '';
 };
 
-window.sandbox = helpers.createSandbox();
+window.sandbox = window.helpers.createSandbox();
