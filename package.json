@@ -28,6 +28,7 @@
     "grunt-browserify": "1.2.2",
     "grunt-buster": "^0.3.1",
     "grunt-cli": "~0.1.8",
+    "grunt-contrib-copy": "^0.5.0",
     "grunt-istanbul": "^0.3.0",
     "hogan.js": "^3.0.2",
     "jshint": "^2.5.0",

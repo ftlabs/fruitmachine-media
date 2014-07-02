@@ -31,8 +31,8 @@ var breakpoints = {
 };
 
 var media = {};
-media[breakpoints.get('query-small')] = 'small';
-media[breakpoints.get('query-large')] = 'large';
+media[breakpoints['query-small']] = 'small';
+media[breakpoints['query-large']] = 'large';
 
 /**
  * Module Definitions
@@ -56,21 +56,21 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	helpers: [
 		require('../coverage/media')
 	],
-    media: media,
+	media: media,
 	initialize: function() {},
 	setup: function() {},
 
-    states: {
-        small: {
-            setup: function () {
-                console.log('State Small Setup');
-            },
+	states: {
+		small: {
+			setup: function () {
+				console.log('State Small Setup');
+			},
 
-            teardown: function (options) {
-                console.log('State Small Teardown');
-            }
-        }
-    },
+			teardown: function (options) {
+				console.log('State Small Teardown');
+			}
+		}
+	},
 	teardown: function() {},
 	destroy: function() {}
 });
