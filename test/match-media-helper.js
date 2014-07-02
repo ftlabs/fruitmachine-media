@@ -1,32 +1,48 @@
 'use strict';
 
-var globalStateLibrary = {};
+var currentSize = null;
+var globalStateLibrary = [];
 
-module.exports = function (mediaQuery) {
+function PseudoMediaQueryList (mediaQuery) {
 	var callbacks = [];
-	var query = mediaQuery;
 
-	// make the callback available to the rest of the module so that the controller can do stuff.
-	if (!globalStateLibrary[query]) {
-		globalStateLibrary[query] = callbacks;
-	} else {
-		globalStateLibrary[query] = globalStateLibrary[query].concat(callbacks);
-	}
+	this.addListener = function (callback) {
+		callbacks.push(callback);
+		console.log('callback added for ', mediaQuery);
+	};
 
-	return {
-		addListener: function (callback) {
-			callbacks.push(callback);
-			console.log('callback added for ', query);
-		},
-
-		removeListener: function (callback) {
-			var index = callbacks.indexOf(callback);
-			if (!!~index) {
-				callbacks.splice(index,1);
-				console.log('removed callback for', query);
-			}
+	this.removeListener = function (callback) {
+		var index = callbacks.indexOf(callback);
+		if (!!~index) {
+			callbacks.splice(index,1);
+			console.log('removed callback for', mediaQuery);
 		}
 	};
+
+	this.matches = (currentSize === mediaQuery);
+
+	this.media = mediaQuery;
+
+	this._runCallbacks = function () {
+		callbacks.forEach(function (item) {
+			item();
+		});
+	};
+}
+
+module.exports = function (mediaQuery) {
+
+	if (currentSize === null) {
+		currentSize = mediaQuery;
+	}
+
+	if (!globalStateLibrary[mediaQuery]) {
+		var mql = new PseudoMediaQueryList(mediaQuery);
+		globalStateLibrary[mediaQuery] = mql;
+		return mql;
+	} else {
+		return globalStateLibrary[mediaQuery];
+	}
 };
 
 module.exports.controller = {
@@ -35,6 +51,9 @@ module.exports.controller = {
 	},
 
 	setState: function (state) {
-		globalStateLibrary[state]();
+		globalStateLibrary.forEach(function (item) {
+			item.matches = (item.media === state);
+			item._runCallbacks();
+		});
 	}
 };

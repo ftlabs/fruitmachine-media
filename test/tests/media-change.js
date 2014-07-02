@@ -6,6 +6,13 @@ var assert = buster.assertions.assert;
 var refute = buster.assertions.refute;
 var Promise = window.Promise;
 
+/**
+ * Due to the limitations of my polyfill not working out whether two
+ * media queries overlap the tests should only cover the situation
+ * where the two are mutually exclusive and cover the entire phase
+ * space of sizes. As we do in the webapp.
+ */
+
 buster.testCase('View#destroy()', {
 	setUp: function() {
 		helpers.createView.call(this);
