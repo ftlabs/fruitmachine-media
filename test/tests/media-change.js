@@ -14,8 +14,6 @@ buster.testCase('View#destroy()', {
       .setup();
 
     assert.equals(true, true);
-
-    console.log(Object.keys.call({}, window));
   },
 
   tearDown: function() {
