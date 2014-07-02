@@ -69,6 +69,15 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 			teardown: function (options) {
 				console.log('State Small Teardown');
 			}
+		},
+		large: {
+			setup: function () {
+				console.log('State Large Setup');
+			},
+
+			teardown: function (options) {
+				console.log('State Large Teardown');
+			}
 		}
 	},
 	teardown: function() {},

@@ -5,6 +5,7 @@ var globalStateLibrary = {};
 
 function PseudoMediaQueryList (mediaQuery) {
 	var callbacks = [];
+	var self = this;
 
 	this.addListener = function (callback) {
 		callbacks.push(callback);
@@ -25,7 +26,8 @@ function PseudoMediaQueryList (mediaQuery) {
 
 	this._runCallbacks = function () {
 		callbacks.forEach(function (item) {
-			item(this);
+			console.log(self.matches, self.media);
+			item(self);
 		});
 	};
 }
