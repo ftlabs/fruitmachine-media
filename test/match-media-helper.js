@@ -9,14 +9,12 @@ function PseudoMediaQueryList (mediaQuery) {
 
 	this.addListener = function (callback) {
 		callbacks.push(callback);
-		console.log('callback added for ', mediaQuery);
 	};
 
 	this.removeListener = function (callback) {
 		var index = callbacks.indexOf(callback);
 		if (!!~index) {
 			callbacks.splice(index,1);
-			console.log('removed callback for', mediaQuery);
 		}
 	};
 
@@ -26,7 +24,6 @@ function PseudoMediaQueryList (mediaQuery) {
 
 	this._runCallbacks = function () {
 		callbacks.forEach(function (item) {
-			console.log(self.matches, self.media);
 			item(self);
 		});
 	};

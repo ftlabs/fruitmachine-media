@@ -1,4 +1,4 @@
-/* global helpers, buster, sandbox, Promise */
+/* global helpers, buster, sandbox, Promise, fruitmachine */
 
 'use strict';
 
@@ -13,34 +13,34 @@ var Promise = window.Promise;
  * space of sizes. As we do in the webapp.
  */
 
-buster.testCase('View#destroy()', {
+buster.testCase('Media Changes', {
 	setUp: function() {
 		helpers.createView.call(this);
-	},
-
-	"Should recurse.": function(done) {
 
 		this.view
 			.render()
 			.inject(sandbox)
 			.setup();
 
-		assert.equals(true, true);
+		buster.log('View has been setup');
+	},
 
-		var promise = new Promise(function (resolve, reject) {
-			setTimeout(function () {
-				resolve();
-			}, 200);
-		});
+	"Should Trigger state change": function() {
 
-		// Returning a promise.all does not work.
-		Promise.all([promise]).then(function () {
-			done();
-		});
-
-		buster.log(window.matchMedia.controller.listStates());
-
+		// Change from the first (the initial state) state to the second.
 		window.matchMedia.controller.setState(window.matchMedia.controller.listStates()[1]);
+	},
+
+	"Should Perform Changes in Order": function(done) {
+
+		var states = window.matchMedia.controller.listStates();
+
+		// Change back and forth quickly.
+		window.matchMedia.controller.setState(states[0]);
+		setTimeout(function () {
+			window.matchMedia.controller.setState(states[1]);
+			done();
+		}, 30);
 	},
 
 	tearDown: function() {

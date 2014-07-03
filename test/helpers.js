@@ -1,11 +1,15 @@
-/*global Hogan, fruitmachine, sandbox*/
+/*global Hogan, fruitmachine, sandbox, buster*/
 
 'use strict';
+
+var assert = buster.assertions.assert;
+var refute = buster.assertions.refute;
 
 window.helpers = {};
 
 window.matchMedia = require('./match-media-helper');
 
+window.mediaHelper = require('../coverage/media');
 
 /**
  * Templates
@@ -17,7 +21,6 @@ window.templates = window.helpers.templates = {
 	'orange': Hogan.compile('{{text}}'),
 	'pear': Hogan.compile('{{text}}')
 };
-
 /**
  * Fake Breakpoints
  */
@@ -33,6 +36,8 @@ var breakpoints = {
 var media = {};
 media[breakpoints['query-small']] = 'small';
 media[breakpoints['query-large']] = 'large';
+
+var lastState = null;
 
 /**
  * Module Definitions
@@ -50,11 +55,13 @@ window.Layout = window.helpers.Views.Layout = fruitmachine.define({
 	destroy: function() {}
 });
 
+// Define Apple which has the asserts, the other
+//  fruit are just decoration and don't really do anything.
 window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	name: 'apple',
 	template: window.templates.apple,
 	helpers: [
-		require('../coverage/media')
+		window.mediaHelper
 	],
 	media: media,
 	initialize: function() {},
@@ -63,20 +70,28 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	states: {
 		small: {
 			setup: function () {
-				console.log('State Small Setup');
+				console.log('State Small Setup, last state:', lastState);
+				if (lastState) assert.equals(lastState , 'large teardown');
+				lastState = 'small setup';
 			},
 
 			teardown: function (options) {
-				console.log('State Small Teardown');
+				console.log('State Small Teardown, last state:', lastState);
+				assert.equals(lastState , 'small setup');
+				lastState = 'small teardown';
 			}
 		},
 		large: {
 			setup: function () {
-				console.log('State Large Setup');
+				console.log('State Large Setup, last state:', lastState);
+				assert.equals(lastState , 'small teardown');
+				lastState = 'large setup';
 			},
 
 			teardown: function (options) {
-				console.log('State Large Teardown');
+				console.log('State Large Teardown, last state:', lastState);
+				assert.equals(lastState , 'large setup');
+				lastState = 'large teardown';
 			}
 		}
 	},
