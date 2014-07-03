@@ -49,9 +49,15 @@ module.exports.controller = {
 		return Object.keys(globalStateLibrary);
 	},
 
+	currentState: function () {
+		return currentSize;
+	},
+
 	setState: function (state) {
 
 		console.log('Resizing the window to match', state, 'the old state was', currentSize);
+
+		currentSize = state;
 
 		for (var i in globalStateLibrary) {
 			if (globalStateLibrary.hasOwnProperty(i)) {
