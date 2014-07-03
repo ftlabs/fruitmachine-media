@@ -4,6 +4,7 @@
 
 var assert = buster.assertions.assert;
 var refute = buster.assertions.refute;
+var Promise = require('es6-promise').Promise;
 
 window.helpers = {};
 
@@ -70,33 +71,51 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	states: {
 		small: {
 			setup: function () {
-				console.log('State Small Setup, last state:', lastState);
-				if (lastState) assert.equals(lastState , 'large teardown');
-				lastState = 'small setup';
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						if (lastState) assert.equals(lastState , 'large teardown');
+						lastState = 'small setup';
+					}, 30);
+				});
+				return p;
 			},
 
 			teardown: function (options) {
-				console.log('State Small Teardown, last state:', lastState);
-				assert.equals(lastState , 'small setup');
-				lastState = 'small teardown';
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						assert.equals(lastState , 'small setup');
+						lastState = 'small teardown';
+					}, 30);
+				});
+				return p;
 			}
 		},
 		large: {
 			setup: function () {
-				console.log('State Large Setup, last state:', lastState);
-				assert.equals(lastState , 'small teardown');
-				lastState = 'large setup';
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						if (lastState) assert.equals(lastState , 'small teardown');
+						lastState = 'large setup';
+					}, 30);
+				});
+				return p;
 			},
 
 			teardown: function (options) {
-				console.log('State Large Teardown, last state:', lastState);
-				assert.equals(lastState , 'large setup');
-				lastState = 'large teardown';
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						assert.equals(lastState , 'large setup');
+						lastState = 'large teardown';
+					}, 30);
+				});
+				return p;
 			}
 		}
 	},
 	teardown: function() {},
-	destroy: function() {}
+	destroy: function() {
+		lastState = null;
+	}
 });
 
 window.List = window.helpers.Views.List = fruitmachine.define({

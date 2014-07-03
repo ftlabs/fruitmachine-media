@@ -23,24 +23,34 @@ buster.testCase('Media Changes', {
 			.setup();
 
 		buster.log('View has been setup');
+
+		buster.log('Current State:', window.matchMedia.controller.currentState());
 	},
 
-	"Should Trigger state change": function() {
-
-		// Change from the first (the initial state) state to the second.
-		window.matchMedia.controller.setState(window.matchMedia.controller.listStates()[1]);
-	},
-
-	"Should Perform Changes in Order": function(done) {
-
+	"Simple go big then small again slowly.": function(done) {
 		var states = window.matchMedia.controller.listStates();
 
 		// Change back and forth quickly.
 		window.matchMedia.controller.setState(states[0]);
 		setTimeout(function () {
 			window.matchMedia.controller.setState(states[1]);
-			done();
-		}, 30);
+			setTimeout(function () {
+				done();
+			}, 150);
+		}, 50);
+	},
+
+	"Simple go big then small again quickly.": function(done) {
+		var states = window.matchMedia.controller.listStates();
+
+		// Change back and forth quickly.
+		window.matchMedia.controller.setState(states[0]);
+		setTimeout(function () {
+			window.matchMedia.controller.setState(states[1]);
+			setTimeout(function () {
+				done();
+			}, 200);
+		}, 10);
 	},
 
 	tearDown: function() {
