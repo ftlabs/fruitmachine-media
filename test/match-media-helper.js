@@ -23,8 +23,8 @@ function PseudoMediaQueryList (mediaQuery) {
 	this.media = mediaQuery;
 
 	this._runCallbacks = function () {
-		callbacks.forEach(function (item) {
-			item(self);
+		callbacks.forEach(function (fn) {
+			fn(self);
 		});
 	};
 }
@@ -54,8 +54,6 @@ module.exports.controller = {
 	},
 
 	setState: function (state) {
-
-		console.log('Resizing the window to match', state, 'the old state was', currentSize);
 
 		currentSize = state;
 

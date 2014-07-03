@@ -27,30 +27,34 @@ buster.testCase('Media Changes', {
 		buster.log('Current State:', window.matchMedia.controller.currentState());
 	},
 
-	"Simple go big then small again slowly.": function(done) {
+	"Go big then small again quickly.": function(done) {
 		var states = window.matchMedia.controller.listStates();
 
 		// Change back and forth quickly.
-		window.matchMedia.controller.setState(states[0]);
+		window.matchMedia.controller.setState(states[1]);
 		setTimeout(function () {
-			window.matchMedia.controller.setState(states[1]);
+			window.matchMedia.controller.setState(states[0]);
 			setTimeout(function () {
-				done();
-			}, 150);
-		}, 50);
-	},
-
-	"Simple go big then small again quickly.": function(done) {
-		var states = window.matchMedia.controller.listStates();
-
-		// Change back and forth quickly.
-		window.matchMedia.controller.setState(states[0]);
-		setTimeout(function () {
-			window.matchMedia.controller.setState(states[1]);
-			setTimeout(function () {
-				done();
-			}, 200);
+				window.matchMedia.controller.setState(states[1]);
+				setTimeout(function () {
+					window.matchMedia.controller.setState(states[0]);
+					setTimeout(function () {
+						window.matchMedia.controller.setState(states[1]);
+						setTimeout(function () {
+							window.matchMedia.controller.setState(states[0]);
+						}, 10);
+					}, 10);
+				}, 10);
+			}, 10);
 		}, 10);
+
+		window.helpers.registerAssertionCallback(function (n) {
+
+			// After beforing 6 lots of teardown and setup it is done
+			if (n===12) {
+				done();
+			}
+		});
 	},
 
 	tearDown: function() {
