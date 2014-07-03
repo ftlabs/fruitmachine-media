@@ -23,8 +23,9 @@ var Promise = require('es6-promise').Promise;
 
 module.exports = function(module) {
 	var setImmediateId = 0;
-	var setupCallbacks = [];
-	var teardownCallbacks = [];
+	var callbacks = [];
+	var callbackProcessList = [];
+	var processing = 0;
 
 	module.on('initialize', function(options) {
 		this._media = {};
@@ -77,6 +78,22 @@ module.exports = function(module) {
 		}
 	});
 
+	function processStateChanges(callback) {
+		processing = true;
+		if(callbackProcessList.length) {
+
+			// Pull oldest state change
+			var item = callbackProcessList.shift();
+			Promise.all([item.action(item.name)]).then(function () {
+				module.fireStatic('statechange');
+				processStateChanges(callback);
+			});
+		} else {
+			processing = false;
+			if (callback) callback();
+		}
+	}
+
 	function callback(name) {
 		return function(data) {
 
@@ -94,44 +111,32 @@ module.exports = function(module) {
 
 			// Either setup or teardown
 			if (data.matches) {
-				setupCallbacks.push(name);
+
+				// Add setups to the end
+				callbacks.push({
+					name: name,
+					action: setup
+				});
 			} else {
-				teardownCallbacks.push(name);
+
+				// Add teardowns to the beginning
+				callbacks.unshift({
+					name: name,
+					action: teardown
+				});
 			}
 
 			if (!setImmediateId) {
+
+				// Allow for all state changes to be registered. (In order of teardown -> setup)
+				// Concatenate this to the list of pending state changes.
+				// Trigger processStateChanges if it is not already running.
 				setImmediateId = setImmediate(function() {
+
 					setImmediateId = 0;
-
-					teardownCallbacks = teardownCallbacks.map(function (currentItem) {
-						return teardown(currentItem);
-					});
-
-					Promise.all(teardownCallbacks).then(function () {
-
-						// Remove all processed items from the teardown callbacks
-						teardownCallbacks = teardownCallbacks.filter(function (a) {return a!==undefined;});
-
-						// Fire an event to allow third
-						// parties to hook into this change.
-						module.fireStatic('statechange');
-
-						// Run Setup callbacks if any.
-						setupCallbacks = setupCallbacks.map(function (currentItem) {
-							return setup(currentItem);
-						});
-						Promise.all(setupCallbacks).then(function () {
-
-							// Remove all processed items from the setup callbacks
-							setupCallbacks = setupCallbacks.filter(function (a) {return a!==undefined;});
-
-							module.fireStatic('statechangecomplete');
-						}).catch(function (e) {
-							console.error("Error in module setup", e);
-						});
-					}).catch(function (e) {
-						console.error("Error in module teardown", e);
-					});
+					callbackProcessList = callbackProcessList.concat(callbacks);
+					callbacks = [];
+					if (!processing) processStateChanges();
 				});
 			}
 
