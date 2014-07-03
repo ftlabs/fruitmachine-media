@@ -6,11 +6,26 @@ var assert = buster.assertions.assert;
 var refute = buster.assertions.refute;
 var Promise = require('es6-promise').Promise;
 
+buster.testRunner.timeout = 1000;
+
 window.helpers = {};
 
 window.matchMedia = require('./match-media-helper');
 
 window.mediaHelper = require('../coverage/media');
+
+var noOfAssertions = 0;
+var assertionCallbacks = [];
+function assertionHappened() {
+	noOfAssertions++;
+	assertionCallbacks.forEach(function (fn) {
+		fn(noOfAssertions);
+	});
+}
+
+window.helpers.registerAssertionCallback = function (fn) {
+	assertionCallbacks.push(fn);
+};
 
 /**
  * Templates
@@ -73,8 +88,12 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 			setup: function () {
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
-						if (lastState) assert.equals(lastState , 'large teardown');
+						if (lastState) {
+							assertionHappened();
+							assert.equals(lastState , 'large teardown');
+						}
 						lastState = 'small setup';
+						resolve();
 					}, 30);
 				});
 				return p;
@@ -84,7 +103,9 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
 						assert.equals(lastState , 'small setup');
+						assertionHappened();
 						lastState = 'small teardown';
+						resolve();
 					}, 30);
 				});
 				return p;
@@ -94,8 +115,12 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 			setup: function () {
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
-						if (lastState) assert.equals(lastState , 'small teardown');
+						if (lastState) {
+							assert.equals(lastState , 'small teardown');
+							assertionHappened();
+						}
 						lastState = 'large setup';
+						resolve();
 					}, 30);
 				});
 				return p;
@@ -105,7 +130,9 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
 						assert.equals(lastState , 'large setup');
+						assertionHappened();
 						lastState = 'large teardown';
+						resolve();
 					}, 30);
 				});
 				return p;
