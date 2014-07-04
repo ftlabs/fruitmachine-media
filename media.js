@@ -126,18 +126,23 @@ module.exports = function(module) {
 				});
 			}
 
+			// Allow for all state changes to be registered. (In order of teardown -> setup)
+			// Concatenate this to the list of pending state changes.
+			// Trigger processStateChanges if it is not already running.
+			var addPair = function () {
+				clearImmediate(setImmediateId);
+				setImmediateId = 0;
+				callbackProcessList = callbackProcessList.concat(callbacks);
+				callbacks = [];
+				if (!processing) processStateChanges();
+			};
+
+			if (callbacks.length === 2) {
+				addPair();
+			}
+
 			if (!setImmediateId) {
-
-				// Allow for all state changes to be registered. (In order of teardown -> setup)
-				// Concatenate this to the list of pending state changes.
-				// Trigger processStateChanges if it is not already running.
-				setImmediateId = setImmediate(function() {
-
-					setImmediateId = 0;
-					callbackProcessList = callbackProcessList.concat(callbacks);
-					callbacks = [];
-					if (!processing) processStateChanges();
-				});
+				setImmediateId = setImmediate(addPair);
 			}
 
 			// Update the matches state

@@ -53,8 +53,6 @@ var media = {};
 media[breakpoints['query-small']] = 'small';
 media[breakpoints['query-large']] = 'large';
 
-var lastState = null;
-
 /**
  * Module Definitions
  */
@@ -86,13 +84,14 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	states: {
 		small: {
 			setup: function () {
+				var self = this;
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
-						if (lastState) {
+						if (self.lastState) {
+							assert.equals(self.lastState , 'large teardown');
 							assertionHappened();
-							assert.equals(lastState , 'large teardown');
 						}
-						lastState = 'small setup';
+						self.lastState = 'small setup';
 						resolve();
 					}, 30);
 				});
@@ -100,11 +99,12 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 			},
 
 			teardown: function (options) {
+				var self = this;
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
-						assert.equals(lastState , 'small setup');
+						assert.equals(self.lastState , 'small setup');
 						assertionHappened();
-						lastState = 'small teardown';
+						self.lastState = 'small teardown';
 						resolve();
 					}, 30);
 				});
@@ -113,13 +113,14 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 		},
 		large: {
 			setup: function () {
+				var self = this;
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
-						if (lastState) {
-							assert.equals(lastState , 'small teardown');
+						if (self.lastState) {
+							assert.equals(self.lastState , 'small teardown');
 							assertionHappened();
 						}
-						lastState = 'large setup';
+						self.lastState = 'large setup';
 						resolve();
 					}, 30);
 				});
@@ -127,11 +128,12 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 			},
 
 			teardown: function (options) {
+				var self = this;
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
-						assert.equals(lastState , 'large setup');
+						assert.equals(self.lastState , 'large setup');
 						assertionHappened();
-						lastState = 'large teardown';
+						self.lastState = 'large teardown';
 						resolve();
 					}, 30);
 				});
@@ -141,7 +143,7 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	},
 	teardown: function() {},
 	destroy: function() {
-		lastState = null;
+		self.lastState = null;
 	}
 });
 
@@ -158,11 +160,77 @@ window.List = window.helpers.Views.List = fruitmachine.define({
 window.Orange = window.helpers.Views.Orange = fruitmachine.define({
 	name: 'orange',
 	template: window.templates.orange,
-
+	helpers: [
+		window.mediaHelper
+	],
+	media: media,
 	initialize: function() {},
 	setup: function() {},
+
+	states: {
+		small: {
+			setup: function () {
+				var self = this;
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						if (self.lastState) {
+							assert.equals(self.lastState , 'large teardown');
+							assertionHappened();
+						}
+						self.lastState = 'small setup';
+						resolve();
+					}, 30);
+				});
+				return p;
+			},
+
+			teardown: function (options) {
+				var self = this;
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						assert.equals(self.lastState , 'small setup');
+						assertionHappened();
+						self.lastState = 'small teardown';
+						resolve();
+					}, 30);
+				});
+				return p;
+			}
+		},
+		large: {
+			setup: function () {
+				var self = this;
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						if (self.lastState) {
+							assert.equals(self.lastState , 'small teardown');
+							assertionHappened();
+						}
+						self.lastState = 'large setup';
+						resolve();
+					}, 30);
+				});
+				return p;
+			},
+
+			teardown: function (options) {
+				var self = this;
+				var p = new Promise(function (resolve) {
+					setTimeout(function () {
+						assert.equals(self.lastState , 'large setup');
+						assertionHappened();
+						self.lastState = 'large teardown';
+						resolve();
+					}, 30);
+				});
+				return p;
+			}
+		}
+	},
 	teardown: function() {},
-	destroy: function() {}
+	destroy: function() {
+		self.lastState = null;
+	}
 });
 
 window.Pear = window.helpers.Views.Pear = fruitmachine.define({

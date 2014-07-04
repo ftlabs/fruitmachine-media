@@ -36,6 +36,8 @@ buster.testCase('Media Changes', {
 			window.matchMedia.controller.setState(states[0]);
 			setTimeout(function () {
 				window.matchMedia.controller.setState(states[1]);
+				window.matchMedia.controller.setState(states[0]);
+				window.matchMedia.controller.setState(states[1]);
 				setTimeout(function () {
 					window.matchMedia.controller.setState(states[0]);
 					setTimeout(function () {
@@ -50,8 +52,8 @@ buster.testCase('Media Changes', {
 
 		window.helpers.registerAssertionCallback(function (n) {
 
-			// After beforing 6 lots of teardown and setup it is done
-			if (n===12) {
+			// After performing 8 lots of teardown and setup on two fruit it is done
+			if (n===32) {
 				done();
 			}
 		});
