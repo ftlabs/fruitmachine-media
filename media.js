@@ -126,9 +126,14 @@ module.exports = function(module) {
 				});
 			}
 
-			// Allow for all state changes to be registered. (In order of teardown -> setup)
-			// Concatenate this to the list of pending state changes.
-			// Trigger processStateChanges if it is not already running.
+			// State changes are triggered in the order of the state sizes
+			// this code waits for a pair of callbacks to be collected
+			// or wait an instant if there is no pair.
+			// These pairs are sorted so that instead of always being small
+			// then large it becomes teardown then setup.
+			// This logic is on a module by module basis, so if one module
+			// errors and a callback never resolves only that module will break
+			// and the rest of the fruit will remain unaffected.
 			var addPair = function () {
 				clearImmediate(setImmediateId);
 				setImmediateId = 0;
