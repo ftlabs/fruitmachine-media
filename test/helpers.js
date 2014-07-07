@@ -69,8 +69,7 @@ window.Layout = window.helpers.Views.Layout = fruitmachine.define({
 	destroy: function() {}
 });
 
-// Define Apple which has the asserts, the other
-//  fruit are just decoration and don't really do anything.
+// Fruit with media state change functions.
 window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 	name: 'apple',
 	template: window.templates.apple,
@@ -157,6 +156,7 @@ window.List = window.helpers.Views.List = fruitmachine.define({
 	destroy: function() {}
 });
 
+// Fruit with media state change functions.
 window.Orange = window.helpers.Views.Orange = fruitmachine.define({
 	name: 'orange',
 	template: window.templates.orange,

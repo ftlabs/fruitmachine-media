@@ -80,7 +80,7 @@ module.exports = function(module) {
 
 	function processStateChanges(callback) {
 		processing = true;
-		if(callbackProcessList.length) {
+		if (callbackProcessList.length) {
 
 			// Pull oldest state change
 			var item = callbackProcessList.shift();
