@@ -126,14 +126,16 @@ module.exports = function(module) {
 				});
 			}
 
-			// State changes are triggered in the order of the state sizes
-			// this code waits for a pair of callbacks to be collected
-			// or wait an instant if there is no pair.
-			// These pairs are sorted so that instead of always being small
-			// then large it becomes teardown then setup.
-			// This logic is on a module by module basis, so if one module
-			// errors and a callback never resolves only that module will break
-			// and the rest of the fruit will remain unaffected.
+			// State changes are processed by browser in the order of media queries,
+			// so when changing into and out of a media state the module setups and
+			// teardowns will be received in a different order in each direction.
+			// For each module, the teardown on one state should always be run before
+			// the setup on another state; this will match the delivered events in
+			// one direction, but not the other.
+			// As modules should always be processed with teardowns before setups,
+			// collect each pair of events and reorder so the teardown of one state is
+			// always processed before the setup of the other.
+
 			var addPair = function () {
 				clearImmediate(setImmediateId);
 				setImmediateId = 0;
