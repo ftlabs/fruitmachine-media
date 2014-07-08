@@ -23,8 +23,9 @@ var Promise = require('es6-promise').Promise;
 
 module.exports = function(module) {
 	var setImmediateId = 0;
-	var setupCallbacks = [];
-	var teardownCallbacks = [];
+	var callbacks = [];
+	var callbackProcessList = [];
+	var processing = 0;
 
 	module.on('initialize', function(options) {
 		this._media = {};
@@ -77,6 +78,22 @@ module.exports = function(module) {
 		}
 	});
 
+	function processStateChanges(callback) {
+		processing = true;
+		if (callbackProcessList.length) {
+
+			// Pull oldest state change
+			var item = callbackProcessList.shift();
+			Promise.all([item.action(item.name)]).then(function () {
+				module.fireStatic('statechange');
+				processStateChanges(callback);
+			});
+		} else {
+			processing = false;
+			if (callback) callback();
+		}
+	}
+
 	function callback(name) {
 		return function(data) {
 
@@ -94,45 +111,45 @@ module.exports = function(module) {
 
 			// Either setup or teardown
 			if (data.matches) {
-				setupCallbacks.push(name);
+
+				// Add setups to the end
+				callbacks.push({
+					name: name,
+					action: setup
+				});
 			} else {
-				teardownCallbacks.push(name);
+
+				// Add teardowns to the beginning
+				callbacks.unshift({
+					name: name,
+					action: teardown
+				});
+			}
+
+			// State changes are processed by browser in the order of media queries,
+			// so when changing into and out of a media state the module setups and
+			// teardowns will be received in a different order in each direction.
+			// For each module, the teardown on one state should always be run before
+			// the setup on another state; this will match the delivered events in
+			// one direction, but not the other.
+			// As modules should always be processed with teardowns before setups,
+			// collect each pair of events and reorder so the teardown of one state is
+			// always processed before the setup of the other.
+
+			var addPair = function () {
+				clearImmediate(setImmediateId);
+				setImmediateId = 0;
+				callbackProcessList = callbackProcessList.concat(callbacks);
+				callbacks = [];
+				if (!processing) processStateChanges();
+			};
+
+			if (callbacks.length === 2) {
+				addPair();
 			}
 
 			if (!setImmediateId) {
-				setImmediateId = setImmediate(function() {
-					setImmediateId = 0;
-
-					teardownCallbacks = teardownCallbacks.map(function (currentItem) {
-						return teardown(currentItem);
-					});
-
-					Promise.all(teardownCallbacks).then(function () {
-
-						// Remove all processed items from the teardown callbacks
-						teardownCallbacks = teardownCallbacks.filter(function (a) {return a!==undefined;});
-
-						// Fire an event to allow third
-						// parties to hook into this change.
-						module.fireStatic('statechange');
-
-						// Run Setup callbacks if any.
-						setupCallbacks = setupCallbacks.map(function (currentItem) {
-							return setup(currentItem);
-						});
-						Promise.all(setupCallbacks).then(function () {
-
-							// Remove all processed items from the setup callbacks
-							setupCallbacks = setupCallbacks.filter(function (a) {return a!==undefined;});
-
-							module.fireStatic('statechangecomplete');
-						}).catch(function (e) {
-							console.error("Error in module setup", e);
-						});
-					}).catch(function (e) {
-						console.error("Error in module teardown", e);
-					});
-				});
+				setImmediateId = setImmediate(addPair);
 			}
 
 			// Update the matches state
