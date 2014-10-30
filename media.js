@@ -13,9 +13,12 @@
  * Locals
  */
 
-var mm = window.matchMedia;
-require('setimmediate');
 var Promise = require('es6-promise').Promise;
+require('setimmediate');
+if ('function' !== typeof setImmediate) { // PhantomJS has issues with setImmediate polyfill
+	setImmediate = setTimeout
+	clearImmediate = clearTimeout
+}
 
 /**
  * Exports
@@ -55,7 +58,7 @@ module.exports = function(module) {
 		for (var name in this._media) {
 			if (this._media.hasOwnProperty(name)) {
 				state = this._media[name];
-				matcher = state.matcher = mm(state.query);
+				matcher = state.matcher = window.matchMedia(state.query);
 				matcher.addListener(state.cb = callback(name));
 
 				// Call setup on the current media state.
