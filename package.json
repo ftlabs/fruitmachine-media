@@ -17,7 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "es6-promise": "^1.0.0",
+    "es6-promise": "^2.0.0",
     "setimmediate": "~1.0.2"
   },
   "devDependencies": {
