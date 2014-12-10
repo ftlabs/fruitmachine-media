@@ -182,7 +182,7 @@ module.exports = function(module) {
 		var fn = module._media[options.on][method];
 		var result = fn && fn.call(module, options);
 
-		// If the result is a promise the fire an error on catch
+		// If the result is a promise then fire an error on catch
 		if (result && result.then && result.catch) {
 			result.catch(handleError);
 		}
