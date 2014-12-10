@@ -88,14 +88,15 @@ window.Apple = window.helpers.Views.Apple = fruitmachine.define({
 		small: {
 			setup: function () {
 				var p = new Promise(function () {
-					setTimeout(function () {
-						throw Error('This is an error!!');
-					}, 30);
+
+					// this is just thrown
+					// errors thrown asynchronously get caught by the window
+					throw Error('This is an error!!');
 				});
 				return p;
 			},
 
-			teardown: function (options) {}
+			teardown: function () {}
 		},
 		large: {
 			setup: function () {},
@@ -222,7 +223,7 @@ window.Pear = window.helpers.Views.Pear = fruitmachine.define({
 				return p;
 			},
 
-			teardown: function (options) {
+			teardown: function () {
 				var self = this;
 				var p = new Promise(function (resolve) {
 					setTimeout(function () {
