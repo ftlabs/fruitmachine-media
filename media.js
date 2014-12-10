@@ -183,7 +183,7 @@ module.exports = function(module) {
 		var result = fn && fn.call(module, options);
 
 		// If the result is a promise the fire an error on catch
-		if (result.then && result.catch) {
+		if (result && result.then && result.catch) {
 			result.catch(handleError);
 		}
 
