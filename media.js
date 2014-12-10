@@ -87,8 +87,6 @@ module.exports = function(module) {
 			Promise.all([item.action(item.name)]).then(function () {
 				module.fireStatic('statechange');
 				processStateChanges(callback);
-			}).catch(function (err) {
-				module.fire('media-helper-error', err);
 			});
 		} else {
 			processing = false;
@@ -179,6 +177,13 @@ module.exports = function(module) {
 	function run(method, options) {
 		var fn = module._media[options.on][method];
 		var result = fn && fn.call(module, options);
+
+		// If the result is a promise the fire an error on catch
+		if (result.then && result.catch) {
+			result.catch(function (err) {
+				module.fire('media-helper-error', err);
+			});
+		}
 
 		// Filter out any non promise results.
 		return result === undefined || !!result.then ? result : undefined;
