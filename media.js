@@ -87,6 +87,8 @@ module.exports = function(module) {
 			Promise.all([item.action(item.name)]).then(function () {
 				module.fireStatic('statechange');
 				processStateChanges(callback);
+			}).catch(function (err) {
+				module.fire('media-helper-error', err);
 			});
 		} else {
 			processing = false;
