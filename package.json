@@ -16,11 +16,9 @@
     "email": "ada@ada.is"
   },
   "license": "MIT",
-  "dependencies": {
-    "es6-promise": "^2.0.0",
-    "setimmediate": "~1.0.2"
-  },
   "devDependencies": {
+    "es6-promise": "^2.0.0",
+    "setimmediate": "~1.0.2",
     "buster": "^0.7.0",
     "buster-istanbul": "^0.1.10",
     "fruitmachine": "^0.8.2",

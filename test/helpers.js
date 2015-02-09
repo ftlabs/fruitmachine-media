@@ -4,7 +4,13 @@
 
 var assert = buster.assertions.assert;
 var refute = buster.assertions.refute;
-var Promise = require('es6-promise').Promise;
+
+require('es6-promise').polyfill();
+require('setimmediate');
+if ('function' !== typeof setImmediate) { // PhantomJS has issues with setImmediate polyfill
+	setImmediate = setTimeout
+	clearImmediate = clearTimeout
+}
 
 buster.testRunner.timeout = 1000;
 
