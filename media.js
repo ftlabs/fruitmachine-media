@@ -10,17 +10,6 @@
 'use strict';
 
 /**
- * Locals
- */
-
-var Promise = require('es6-promise').Promise;
-require('setimmediate');
-if ('function' !== typeof setImmediate) { // PhantomJS has issues with setImmediate polyfill
-	setImmediate = setTimeout
-	clearImmediate = clearTimeout
-}
-
-/**
  * Exports
  */
 
