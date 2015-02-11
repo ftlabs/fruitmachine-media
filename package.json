@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@git.ak.ft.com:ftlabs/fruitmachine-media.git"
+    "url": "https://github.com/ftlabs/fruitmachine-media.git"
   },
   "author": {
     "name": "Ada Edwards",
