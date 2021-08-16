@@ -1,4 +1,4 @@
-# fruitmachine-media [![Build Status](https://travis-ci.org/ftlabs/fruitmachine-media.svg?branch=master)](https://travis-ci.org/ftlabs/fruitmachine-media)
+# fruitmachine-media [![Build Status](https://api.travis-ci.com/ftlabs/fruitmachine-media.svg)](https://travis-ci.com/ftlabs/fruitmachine-media)
 
 FruitMachine helper that allows different setup and teardown callbacks to be called based on media queries.  If asychronous logic is needed to be run within a `teardown` or `setup` callback, return a promise.
 

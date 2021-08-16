@@ -19,6 +19,7 @@
   "devDependencies": {
     "es6-promise": "^2.0.0",
     "setimmediate": "^1.0.2",
+    "browserify": "^3.20.0",
     "buster": "^0.7.0",
     "buster-istanbul": "^0.1.10",
     "fruitmachine": "^1.0.0",
@@ -30,6 +31,6 @@
     "grunt-istanbul": "^0.3.0",
     "hogan.js": "^3.0.2",
     "jshint": "^2.5.0",
-    "phantomjs": "^1.9.7-12"
+    "phantomjs": "^2"
   }
 }
