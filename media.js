@@ -79,6 +79,8 @@ module.exports = function(module) {
 			Promise.all([item.action(item.name)]).then(function () {
 				module.fireStatic('statechange');
 				processStateChanges(callback);
+			}).catch(function (e) {
+				console.error(e);
 			});
 		} else {
 			processing = false;
